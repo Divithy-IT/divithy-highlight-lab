@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.wav
+*.json
+*.csv
+previews/
+rendered/
+output/
+
