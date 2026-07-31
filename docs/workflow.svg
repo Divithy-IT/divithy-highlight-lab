@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="250" viewBox="0 0 960 250" role="img" aria-labelledby="title desc">
+  <title id="title">Przepływ pracy Divithy Highlight Lab</title>
+  <desc id="desc">Lokalne nagrania są analizowane i renderowane jako kompilacja oraz shortsy.</desc>
+  <defs><linearGradient id="bg" x1="0" x2="1"><stop stop-color="#0b1020"/><stop offset="1" stop-color="#15102a"/></linearGradient></defs>
+  <rect width="960" height="250" rx="24" fill="url(#bg)"/>
+  <g font-family="Segoe UI,Arial" text-anchor="middle" fill="#f5f7ff">
+    <g><rect x="30" y="65" width="170" height="120" rx="18" fill="#19233e" stroke="#39e7ff"/><text x="115" y="112" font-size="21" font-weight="700">Nagrania</text><text x="115" y="143" font-size="15" fill="#b9c4dc">tylko odczyt</text></g>
+    <text x="225" y="132" font-size="30" fill="#39e7ff">→</text>
+    <g><rect x="255" y="65" width="200" height="120" rx="18" fill="#19233e" stroke="#b166ff"/><text x="355" y="112" font-size="21" font-weight="700">Analiza akcji</text><text x="355" y="143" font-size="15" fill="#b9c4dc">ruch + kontekst</text></g>
+    <text x="480" y="132" font-size="30" fill="#b166ff">→</text>
+    <g><rect x="510" y="65" width="190" height="120" rx="18" fill="#19233e" stroke="#ff4fc8"/><text x="605" y="112" font-size="21" font-weight="700">Montaż FFmpeg</text><text x="605" y="143" font-size="15" fill="#b9c4dc">dźwięk + intro</text></g>
+    <text x="725" y="132" font-size="30" fill="#ff4fc8">→</text>
+    <g><rect x="755" y="65" width="175" height="120" rx="18" fill="#19233e" stroke="#ff4f64"/><text x="842" y="108" font-size="21" font-weight="700">Gotowe pliki</text><text x="842" y="139" font-size="15" fill="#b9c4dc">16:9 + 9:16</text></g>
+  </g>
+</svg>

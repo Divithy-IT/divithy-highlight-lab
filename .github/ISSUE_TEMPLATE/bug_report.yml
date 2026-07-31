@@ -1,0 +1,23 @@
+name: Błąd
+description: Zgłoś powtarzalny problem bez prywatnych nagrań.
+title: "[Błąd] "
+body:
+  - type: markdown
+    attributes:
+      value: Nie dołączaj prywatnych filmów ani transkrypcji.
+  - type: textarea
+    id: description
+    attributes:
+      label: Co się stało?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Kroki odtworzenia
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: System, Python, GPU i kodek
