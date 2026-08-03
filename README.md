@@ -32,6 +32,19 @@ python inventory_videos.py "D:\Nagrania" --output inventory.json
 python analyze_package.py --help
 ```
 
+Naturalniejsze, dłuższe sceny można uzyskać przez ustawienie celu 50 sekund,
+większego kontekstu przed kulminacją oraz adaptacyjnego zakończenia:
+
+```powershell
+python analyze_package.py "D:\Nagrania" "C:\Wyniki\Film" `
+  --segment-seconds 50 --lead-seconds 14 `
+  --adaptive-end-window-seconds 2
+```
+
+W tym wariancie narzędzie szuka spokojniejszego punktu zakończenia mniej więcej
+między 46. a 52. sekundą, ograniczając urwane dialogi i akcje bez nadmiernego
+wydłużania całego odcinka.
+
 FFmpeg jest dostarczany przez `imageio-ffmpeg`, więc osobna instalacja zwykle
 nie jest potrzebna. Pierwsze użycie transkrypcji pobiera wybrany model i wymaga
 internetu; same nagrania nie są automatycznie wysyłane do zewnętrznej usługi.
