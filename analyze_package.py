@@ -45,7 +45,12 @@ def audio_energy(path: Path, sample_count: int) -> np.ndarray:
     return np.array([np.sqrt(np.mean(piece * piece)) if piece.size else 0 for piece in pieces], dtype=np.float32)
 
 
-def analyse_clip(path: Path, segment_seconds: float, lead_seconds: float) -> dict:
+def analyse_clip(
+    path: Path,
+    segment_seconds: float,
+    lead_seconds: float,
+    adaptive_end_window_seconds: float = 0.0,
+) -> dict:
     cap = cv2.VideoCapture(str(path))
     fps = cap.get(cv2.CAP_PROP_FPS) or 60.0
     frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -81,6 +86,20 @@ def analyse_clip(path: Path, segment_seconds: float, lead_seconds: float) -> dic
     if duration > segment_seconds:
         start = min(start, duration - segment_seconds)
     clip_duration = min(segment_seconds, max(1.0, duration - start))
+    # Avoid cutting a sentence or firefight at a rigid timestamp. Search only
+    # near the requested ending so the total episode length stays predictable.
+    if adaptive_end_window_seconds > 0 and duration - start > segment_seconds:
+        earliest = max(1.0, segment_seconds - 2 * adaptive_end_window_seconds)
+        latest = min(duration - start, segment_seconds + adaptive_end_window_seconds)
+        first = max(0, int(round((start + earliest) * SAMPLE_HZ)))
+        last = min(len(score), int(round((start + latest) * SAMPLE_HZ)) + 1)
+        if last > first:
+            quiet_window = max(1, int(round(1.5 * SAMPLE_HZ)))
+            quietness = np.convolve(
+                score, np.ones(quiet_window) / quiet_window, mode="same"
+            )
+            boundary = first + int(np.argmin(quietness[first:last]))
+            clip_duration = min(duration - start, boundary / SAMPLE_HZ - start)
     return {
         "file": path.name,
         "path": str(path),
@@ -136,6 +155,12 @@ def main() -> None:
     parser.add_argument("--segment-seconds", type=float, default=34.0)
     parser.add_argument("--lead-seconds", type=float, default=10.0)
     parser.add_argument(
+        "--adaptive-end-window-seconds",
+        type=float,
+        default=0.0,
+        help="Move the ending to a quieter point near the target duration.",
+    )
+    parser.add_argument(
         "--max-clips",
         type=int,
         help="Keep only the strongest clips, then restore chronological order.",
@@ -175,7 +200,15 @@ def main() -> None:
     if not clips:
         raise SystemExit("No MP4 clips remain after exclusions.")
     args.output.mkdir(parents=True, exist_ok=True)
-    rows = [analyse_clip(clip, args.segment_seconds, args.lead_seconds) for clip in tqdm(clips, desc="Analysing clips")]
+    rows = [
+        analyse_clip(
+            clip,
+            args.segment_seconds,
+            args.lead_seconds,
+            args.adaptive_end_window_seconds,
+        )
+        for clip in tqdm(clips, desc="Analysing clips")
+    ]
     pinned_paths: set[str] = set()
     if args.pinned_manifest:
         pinned_paths = {
@@ -206,6 +239,7 @@ def main() -> None:
         "selector=context-v3",
         f"segment_seconds={args.segment_seconds}",
         f"lead_seconds={args.lead_seconds}",
+        f"adaptive_end_window_seconds={args.adaptive_end_window_seconds}",
         f"max_clips={args.max_clips or 'all'}",
         f"pinned_clips={len(pinned_paths)}",
         *[f"excluded={name}" for name in args.exclude],
